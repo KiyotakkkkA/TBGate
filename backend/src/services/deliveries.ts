@@ -106,8 +106,6 @@ export class DeliveryService {
     private readonly log: Logger,
   ) {}
 
-  /* ------------------------------------------------------------- queue */
-
   /**
    * Leases up to `limit` due deliveries for one worker instance. The claim is a
    * conditional UPDATE, so two workers (or two processes sharing the volume) can never
@@ -213,8 +211,6 @@ export class DeliveryService {
       .where(inArray(deliveries.status, ['pending', 'retrying', 'processing']));
     return Number(row?.value ?? 0);
   }
-
-  /* --------------------------------------------------------------- api */
 
   private async accessibleBotIds(actor: UserRow): Promise<string[] | null> {
     if (actor.role === 'admin') return null;

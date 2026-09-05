@@ -9,7 +9,6 @@ import { Card, CardHeader, PageHeader } from '@/components/ui/surfaces';
 import { ApiError, api } from '@/lib/api';
 import { humanizeUpdateType } from '@/lib/utils';
 
-/** Sensible starting set: the update types most integrations actually consume. */
 const DEFAULT_UPDATES = ['message', 'edited_message', 'callback_query'];
 
 export function BotNewPage() {

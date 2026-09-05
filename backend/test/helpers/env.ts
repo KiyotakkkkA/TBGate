@@ -4,7 +4,6 @@ import { loadEnv } from '../../src/config/env.js';
 export const TEST_ENCRYPTION_KEY =
   '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
 
-/** Minimal valid environment for tests, with overrides applied on top. */
 export function testEnv(overrides: Record<string, string> = {}): Env {
   return loadEnv({
     NODE_ENV: 'test',

@@ -6,10 +6,6 @@ export interface FieldIssue {
   message: string;
 }
 
-/**
- * Runtime validation boundary. Every request body/query passes through here, so a
- * TypeScript type is never trusted on its own.
- */
 export function validate<T>(schema: ZodType<T>, input: unknown, what = 'request'): T {
   const result = schema.safeParse(input);
   if (result.success) return result.data;

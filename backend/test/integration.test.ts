@@ -75,8 +75,6 @@ afterEach(async () => {
   await harness.close();
 });
 
-/* ------------------------------------------------------------ bots ----- */
-
 describe('bot registration', () => {
   it('validates the token with getMe, encrypts it, and registers the webhook', async () => {
     const auth = await login(harness);
@@ -164,8 +162,6 @@ describe('bot registration', () => {
     expect(second.json().error.code).toBe('CONFLICT');
   });
 });
-
-/* --------------------------------------------------- inbound webhook --- */
 
 describe('inbound Telegram webhook', () => {
   it('rejects a request without the secret token header', async () => {
@@ -272,8 +268,6 @@ describe('inbound Telegram webhook', () => {
   });
 });
 
-/* --------------------------------------------------------- delivery ---- */
-
 describe('webhook delivery', () => {
   it('delivers a signed envelope that preserves the original update', async () => {
     const auth = await login(harness);
@@ -294,7 +288,6 @@ describe('webhook delivery', () => {
     expect(call.method).toBe('POST');
 
     const envelope = JSON.parse(call.body);
-    // The Telegram update is preserved verbatim under `update`.
     expect(envelope.update).toEqual(telegramUpdate(404, 'route me'));
     expect(envelope.gateway).toMatchObject({
       botId: bot.id,
@@ -306,7 +299,6 @@ describe('webhook delivery', () => {
       test: false,
     });
 
-    // ... and the body is HMAC signed with the destination secret.
     const secret = (
       await harness.app.inject({
         method: 'POST',
@@ -445,7 +437,6 @@ describe('webhook delivery', () => {
         headers: auth.headers,
       })
     ).json();
-    // The original record is untouched.
     expect(after.status).toBe('failed');
 
     const replayed = (
@@ -497,8 +488,6 @@ describe('webhook delivery', () => {
     expect(a.length + b.length).toBe(1);
   });
 });
-
-/* -------------------------------------------------------- route test --- */
 
 describe('route testing', () => {
   it('sends a clearly marked synthetic event through one route', async () => {
@@ -649,8 +638,6 @@ describe('gateway API keys', () => {
   });
 });
 
-/* ------------------------------------------------------------- auth ---- */
-
 describe('admin authentication and CSRF', () => {
   it('requires a session for admin endpoints', async () => {
     const response = await harness.app.inject({ method: 'GET', url: '/api/v1/bots' });
@@ -696,8 +683,6 @@ describe('admin authentication and CSRF', () => {
     expect(session?.sameSite?.toLowerCase()).toBe('lax');
   });
 });
-
-/* ------------------------------------------------------------ roles ---- */
 
 describe('roles and ownership', () => {
   async function createManager(auth: { headers: Record<string, string> }) {
@@ -777,7 +762,6 @@ describe('roles and ownership', () => {
     ).json();
     expect(list).toHaveLength(1);
 
-    // The admin sees every bot.
     const adminList = (
       await harness.app.inject({ method: 'GET', url: '/api/v1/bots', headers: auth.headers })
     ).json();
@@ -873,8 +857,6 @@ describe('roles and ownership', () => {
   });
 });
 
-/* --------------------------------------------------------- security --- */
-
 describe('destination validation', () => {
   it('rejects a destination with a dangerous scheme', async () => {
     const auth = await login(harness);
@@ -905,8 +887,6 @@ describe('destination validation', () => {
     }
   });
 });
-
-/* ----------------------------------------------------------- health --- */
 
 describe('health and dashboard', () => {
   it('reports readiness with dependency checks', async () => {

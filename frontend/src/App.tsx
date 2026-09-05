@@ -25,10 +25,6 @@ function FullPageLoader() {
   );
 }
 
-/**
- * Auth gate. An unauthenticated visitor is sent to the sign-in page; a user whose
- * password was reset by an administrator is held on the change-password screen.
- */
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, isLoading } = useSession();
   const location = useLocation();

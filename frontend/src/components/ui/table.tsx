@@ -87,7 +87,6 @@ export function TD({
   className?: string;
   align?: 'left' | 'right' | 'center';
   colSpan?: number;
-  /** Native tooltip, used to show a full value that the cell truncates. */
   title?: string;
 }) {
   return (

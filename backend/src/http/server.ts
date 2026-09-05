@@ -82,7 +82,6 @@ export async function buildServer(ctx: AppContext): Promise<FastifyInstance> {
       global: true,
       max: ctx.env.API_RATE_LIMIT_MAX,
       timeWindow: ctx.env.API_RATE_LIMIT_WINDOW_MS,
-      // Rate limiting is per API key when present, otherwise per client address.
       keyGenerator: (request) => {
         const header = request.headers.authorization ?? request.headers['x-api-key'];
         if (typeof header === 'string' && header.length > 0) return `key:${header.slice(-16)}`;

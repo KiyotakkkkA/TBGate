@@ -23,7 +23,6 @@ export function isAdmin(role: UserRole): boolean {
   return role === 'admin';
 }
 
-/** Managers own their resources; admins may act on everything. */
 export function canAccessOwned(role: UserRole, actorId: string, ownerId: string | null): boolean {
   if (role === 'admin') return true;
   return ownerId !== null && ownerId === actorId;

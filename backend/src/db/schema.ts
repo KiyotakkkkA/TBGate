@@ -8,8 +8,6 @@ const timestamps = {
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(now),
 };
 
-/* ----------------------------------------------------------------- users */
-
 export const users = sqliteTable(
   'users',
   {
@@ -58,8 +56,6 @@ export const sessions = sqliteTable(
   ],
 );
 
-/* ------------------------------------------------------------------ bots */
-
 export const bots = sqliteTable(
   'bots',
   {
@@ -98,8 +94,6 @@ export const bots = sqliteTable(
   ],
 );
 
-/* ---------------------------------------------------------- destinations */
-
 export const destinations = sqliteTable(
   'destinations',
   {
@@ -119,8 +113,6 @@ export const destinations = sqliteTable(
   },
   (table) => [index('destinations_owner_idx').on(table.ownerId)],
 );
-
-/* ---------------------------------------------------------------- routes */
 
 export const routes = sqliteTable(
   'routes',
@@ -149,8 +141,6 @@ export const routes = sqliteTable(
   ],
 );
 
-/* ---------------------------------------------------------------- events */
-
 export const telegramEvents = sqliteTable(
   'telegram_events',
   {
@@ -175,8 +165,6 @@ export const telegramEvents = sqliteTable(
     index('telegram_events_chat_idx').on(table.chatId),
   ],
 );
-
-/* ------------------------------------------------------------ deliveries */
 
 export const deliveries = sqliteTable(
   'deliveries',
@@ -249,8 +237,6 @@ export const deliveryAttempts = sqliteTable(
   (table) => [index('delivery_attempts_delivery_idx').on(table.deliveryId, table.attempt)],
 );
 
-/* -------------------------------------------------------------- api keys */
-
 export const apiKeys = sqliteTable(
   'api_keys',
   {
@@ -276,15 +262,11 @@ export const apiKeys = sqliteTable(
   ],
 );
 
-/* -------------------------------------------------------------- settings */
-
 export const appSettings = sqliteTable('app_settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull().default(now),
 });
-
-/* ------------------------------------------------------------- relations */
 
 export const usersRelations = relations(users, ({ many }) => ({
   bots: many(bots),

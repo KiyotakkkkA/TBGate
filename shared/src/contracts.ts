@@ -32,8 +32,6 @@ export const headersSchema = z
   .record(z.string().trim().min(1).max(128), z.string().max(2048))
   .refine((headers) => Object.keys(headers).length <= 25, 'At most 25 headers');
 
-/* ------------------------------------------------------------------ auth */
-
 export const loginSchema = z.object({
   username: trimmed(1, 64),
   password: z.string().min(1).max(512),
@@ -43,8 +41,6 @@ export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1).max(512),
   newPassword: z.string().min(10, 'Password must be at least 10 characters').max(512),
 });
-
-/* ----------------------------------------------------------------- users */
 
 export const createUserSchema = z.object({
   username: trimmed(3, 64).regex(/^[a-zA-Z0-9._-]+$/, 'Letters, digits, dot, underscore, hyphen'),
@@ -63,8 +59,6 @@ export const resetUserPasswordSchema = z.object({
   newPassword: z.string().min(10, 'Password must be at least 10 characters').max(512),
 });
 
-/* ------------------------------------------------------------------ bots */
-
 export const createBotSchema = z.object({
   name: trimmed(1, 120),
   token: trimmed(10, 200),
@@ -79,8 +73,6 @@ export const updateBotSchema = z.object({
   enabled: z.boolean().optional(),
   ownerId: z.string().min(1).nullable().optional(),
 });
-
-/* ---------------------------------------------------------- destinations */
 
 export const createDestinationSchema = z.object({
   name: trimmed(1, 120),
@@ -99,21 +91,16 @@ export const updateDestinationSchema = createDestinationSchema.partial().extend(
   ownerId: z.string().min(1).nullable().optional(),
 });
 
-/* ---------------------------------------------------------------- routes */
-
 export const createRouteSchema = z.object({
   name: trimmed(1, 120),
   destinationId: z.string().min(1),
   updateTypes: z.array(updateTypeSchema).min(1, 'Select at least one update type').max(40),
   enabled: z.boolean().default(true),
   priority: z.number().int().min(0).max(10_000).default(100),
-  /** Optional additional filter on the chat id of the incoming update. */
   chatIdFilter: z.string().trim().max(64).optional(),
 });
 
 export const updateRouteSchema = createRouteSchema.partial();
-
-/* -------------------------------------------------------------- api keys */
 
 export const createApiKeySchema = z.object({
   name: trimmed(1, 120),
@@ -121,16 +108,12 @@ export const createApiKeySchema = z.object({
   expiresAt: z.string().datetime().nullable().optional(),
 });
 
-/* ------------------------------------------------------------- telegram out */
-
 export const sendMessageSchema = z
   .object({
     chat_id: z.union([z.string().min(1), z.number()]),
     text: z.string().min(1).max(4096),
   })
   .loose();
-
-/* --------------------------------------------------------------- queries */
 
 export const listQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

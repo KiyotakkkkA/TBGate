@@ -112,7 +112,6 @@ export const authPlugin = fp(async (app: FastifyInstance, options: { ctx: AppCon
   );
 });
 
-/** Helper for the current user on routes guarded by `requireSession`. */
 export function currentUser(request: FastifyRequest): UserRow {
   const user = request.currentUser;
   if (!user) throw new UnauthenticatedError();

@@ -138,7 +138,6 @@ export class AuthService {
     await this.db.delete(sessions).where(eq(sessions.userId, userId));
   }
 
-  /** Keeps the session table from growing without bound; called by the cleanup job. */
   async purgeExpired(): Promise<number> {
     const result = await this.db.delete(sessions).where(lt(sessions.expiresAt, new Date()));
     return Number(result.rowsAffected ?? 0);

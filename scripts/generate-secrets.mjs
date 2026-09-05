@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-/**
- * Prints freshly generated values for the two required secrets.
- * Usage: pnpm secrets   (or: node scripts/generate-secrets.mjs)
- */
 import { randomBytes } from 'node:crypto';
 
 const encryptionKey = randomBytes(32).toString('hex');

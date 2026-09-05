@@ -187,8 +187,6 @@ export function BotDetailPage() {
   );
 }
 
-/* -------------------------------------------------------------- overview */
-
 function OverviewTab({ bot }: { bot: BotDto }) {
   const toast = useToast();
 
@@ -260,8 +258,6 @@ function Row({ label, value }: { label: string; value: ReactNode }) {
     </div>
   );
 }
-
-/* -------------------------------------------------------------- telegram */
 
 function TelegramTab({ bot, onChanged }: { bot: BotDto; onChanged: () => Promise<void> }) {
   const toast = useToast();
@@ -413,8 +409,6 @@ function TelegramTab({ bot, onChanged }: { bot: BotDto; onChanged: () => Promise
     </div>
   );
 }
-
-/* -------------------------------------------------------------- settings */
 
 function SettingsTab({
   bot,

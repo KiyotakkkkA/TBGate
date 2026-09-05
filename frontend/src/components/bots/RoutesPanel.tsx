@@ -28,7 +28,6 @@ const EMPTY_FORM: FormState = {
   chatIdFilter: '',
 };
 
-/** Route management for one bot: which update types go to which destination. */
 export function RoutesPanel({ botId }: { botId: string }) {
   const toast = useToast();
   const queryClient = useQueryClient();

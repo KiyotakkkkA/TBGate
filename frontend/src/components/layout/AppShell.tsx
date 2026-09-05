@@ -71,7 +71,6 @@ export function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
-  // Route changes should always close the mobile drawer.
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
@@ -103,7 +102,6 @@ export function AppShell() {
 
   return (
     <div className="flex h-full">
-      {/* Desktop sidebar */}
       <aside className="hidden w-56 shrink-0 flex-col border-r border-border-base bg-surface lg:flex">
         <div className="flex h-14 items-center gap-2.5 border-b border-border-base px-4">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent">
@@ -117,7 +115,6 @@ export function AppShell() {
         </div>
       </aside>
 
-      {/* Mobile drawer */}
       {mobileOpen ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div

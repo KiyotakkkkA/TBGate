@@ -348,7 +348,6 @@ interface TransportFailure {
   errorMessage: string;
 }
 
-/** Maps fetch/undici failures onto stable, operator-readable error codes. */
 export function classifyTransportError(error: unknown, timeoutMs: number): TransportFailure {
   if (error instanceof Error && error.name === 'AbortError') {
     return {

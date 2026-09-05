@@ -12,7 +12,6 @@ export class ApiError extends Error {
     this.name = 'ApiError';
   }
 
-  /** Field-level issues produced by server-side schema validation, when present. */
   get fieldIssues(): Array<{ path: string; message: string }> {
     const details = this.details as
       { issues?: Array<{ path: string; message: string }> } | undefined;

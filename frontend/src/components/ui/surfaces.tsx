@@ -138,7 +138,6 @@ export function StatTile({
   );
 }
 
-/** Error presentation for a failed query: friendly message, request id kept for support. */
 export function ErrorState({
   title = 'Something went wrong',
   message,

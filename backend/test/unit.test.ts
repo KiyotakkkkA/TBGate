@@ -18,8 +18,6 @@ import { TEST_ENCRYPTION_KEY, testEnv } from './helpers/env.js';
 
 const KEY = Buffer.from(TEST_ENCRYPTION_KEY, 'hex');
 
-/* ------------------------------------------------------ environment ----- */
-
 describe('environment validation', () => {
   it('accepts a complete configuration and applies documented defaults', () => {
     const env = testEnv();
@@ -69,8 +67,6 @@ describe('environment validation', () => {
     expect(() => testEnv({ SESSION_SECRET: 'too-short' })).toThrow(ConfigurationError);
   });
 });
-
-/* ---------------------------------------------------------- crypto ------ */
 
 describe('secret encryption', () => {
   it('round-trips a value through AES-256-GCM', () => {
@@ -148,8 +144,6 @@ describe('HMAC webhook signing', () => {
   });
 });
 
-/* ------------------------------------------------------ classifier ------ */
-
 describe('Telegram update classification', () => {
   it('classifies a plain message and extracts the chat id', () => {
     const result = classifyUpdate({
@@ -204,8 +198,6 @@ describe('Telegram update classification', () => {
   });
 });
 
-/* --------------------------------------------------------- routing ------ */
-
 describe('route matching', () => {
   const base: MatchableRoute = {
     id: 'rte_1',
@@ -253,8 +245,6 @@ describe('route matching', () => {
     expect(matched.map((route) => route.id)).toEqual(['rte_a', 'rte_b']);
   });
 });
-
-/* ----------------------------------------------------------- retry ------ */
 
 describe('retry scheduling', () => {
   const policy = { maxAttempts: 6, delaysMs: [1000, 5000, 30000, 120000, 600000] };

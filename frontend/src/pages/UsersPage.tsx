@@ -10,12 +10,6 @@ import { useSession } from '@/hooks/useSession';
 import { ApiError, api } from '@/lib/api';
 import { formatDateTime, formatRelative } from '@/lib/utils';
 
-/**
- * Admin-only user administration.
- *
- * Admins manage every resource and every account. Managers can create and route their own
- * bots and destinations, and only ever see what they own.
- */
 export function UsersPage() {
   const toast = useToast();
   const queryClient = useQueryClient();

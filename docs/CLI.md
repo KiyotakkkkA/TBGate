@@ -185,35 +185,14 @@ Run `pnpm install` and `pnpm build` to restore dependencies and build output.
 
 | Target                | What it does                                                            |
 | --------------------- | ----------------------------------------------------------------------- |
-| `make docker-build`   | Build a local image with the image tag and package version tag          |
-| `make docker-buildx`  | Build for the configured platforms with Buildx; no `--push` or `--load` |
-| `make docker-push`    | Build and push both tags; requires `DOCKERHUB_USERNAME`                 |
 | `make docker-up`      | Run `docker compose up -d --build`                                      |
 | `make docker-down`    | Run `docker compose down`; keep the bind-mounted `data/` directory      |
 | `make docker-restart` | Recreate the container with `docker compose up -d --force-recreate`     |
 | `make docker-logs`    | Follow Compose logs, starting with the last 100 lines                   |
 
-Image settings can be supplied in `.env` or on the command line:
-
-| Variable             | Default                                          |
-| -------------------- | ------------------------------------------------ |
-| `DOCKERHUB_USERNAME` | Unset; local builds use an unprefixed image name |
-| `IMAGE_NAME`         | `telegram-gateway`                               |
-| `IMAGE_TAG`          | `latest`                                         |
-| `VERSION`            | Version from the root `package.json`             |
-| `PLATFORMS`          | `linux/amd64,linux/arm64`                        |
-
 ```bash
-make docker-build IMAGE_TAG=dev
 make docker-up
 make docker-logs
-```
-
-To publish after signing in to Docker Hub:
-
-```bash
-docker login
-make docker-push DOCKERHUB_USERNAME=youruser IMAGE_TAG=latest
 ```
 
 `docker-restart` recreates the container; use `docker-up` when source changes need an

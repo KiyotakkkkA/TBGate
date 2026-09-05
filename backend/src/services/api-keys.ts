@@ -107,7 +107,6 @@ export class ApiKeyService {
     await this.db.delete(apiKeys).where(eq(apiKeys.id, id));
   }
 
-  /** Resolves a presented key to a principal, rejecting revoked and expired keys. */
   async authenticate(token: string): Promise<ApiKeyPrincipal> {
     if (!token.startsWith(`${KEY_PREFIX}_`)) {
       throw new UnauthenticatedError('Invalid API key');
@@ -150,7 +149,6 @@ export class ApiKeyService {
     }
   }
 
-  /** Cleanup helper: drop keys that were revoked or expired long ago. */
   async purgeStale(before: Date): Promise<number> {
     const result = await this.db
       .delete(apiKeys)

@@ -19,7 +19,6 @@ export function formatDateTime(value: string | null | undefined): string {
   });
 }
 
-/** Compact relative time for activity columns: "12s ago", "3h ago", "5d ago". */
 export function formatRelative(value: string | null | undefined): string {
   if (!value) return 'never';
   const timestamp = new Date(value).getTime();
@@ -66,7 +65,6 @@ export function formatUptime(seconds: number): string {
   return `${minutes}m`;
 }
 
-/** Turns `message`/`callback_query` into `Message` / `Callback query` for display. */
 export function humanizeUpdateType(value: string): string {
   const spaced = value.replace(/_/g, ' ');
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);

@@ -20,3 +20,4 @@ test-results/
 
 # Local development and deployment notes
 /docs/DEV_SETUP.md
+/Makefile.build

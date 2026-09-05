@@ -143,11 +143,6 @@ export class BotService {
     });
   }
 
-  /**
-   * Creation flow (docs/ARCHITECTURE.md §Bot lifecycle):
-   * validate via getMe -> encrypt token -> persist identity -> generate webhook secret ->
-   * register the webhook when the bot is enabled.
-   */
   async create(input: CreateBotInput, actor: UserRow): Promise<BotDto> {
     const identity = await this.telegram.getMe(input.token).catch((error) => {
       if (error instanceof AppError && error.code === 'TELEGRAM_API_ERROR') {

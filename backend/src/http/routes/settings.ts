@@ -51,7 +51,6 @@ export async function registerSettingsRoutes(app: FastifyInstance, ctx: AppConte
     ctx.services.stats.dashboard(currentUser(request), ctx.worker?.isRunning ?? false),
   );
 
-  /** Manual retention sweep, for operators who do not want to wait for the timer. */
   app.post('/api/v1/settings/cleanup', { preHandler: app.requireAdmin }, async () =>
     ctx.cleanup.runOnce(),
   );

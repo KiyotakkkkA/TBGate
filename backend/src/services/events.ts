@@ -100,7 +100,6 @@ export class EventService {
     };
   }
 
-  /** Fans an event out to every matching route. Returns the number of deliveries queued. */
   async enqueueDeliveries(input: {
     eventId: string;
     bot: BotRow;

@@ -45,8 +45,6 @@ export async function registerBotRoutes(app: FastifyInstance, ctx: AppContext): 
     return { ok: true };
   });
 
-  /* ------------------------------------------------------------ telegram */
-
   app.post<{ Params: { botId: string } }>(
     '/api/v1/bots/:botId/telegram/test',
     guard,
@@ -72,8 +70,6 @@ export async function registerBotRoutes(app: FastifyInstance, ctx: AppContext): 
       return { ok: true };
     },
   );
-
-  /* -------------------------------------------------------------- routes */
 
   app.get<{ Params: { botId: string } }>('/api/v1/bots/:botId/routes', guard, async (request) =>
     ctx.services.routes.listForBot(request.params.botId, currentUser(request)),
@@ -123,7 +119,6 @@ export async function registerBotRoutes(app: FastifyInstance, ctx: AppContext): 
 
       const bot = await ctx.services.bots.getRowForActor(route.botId, actor);
       const update = buildSampleUpdate(eventType, bot.name);
-      // Restrict the fan-out to the route under test.
       const result = await ctx.services.events.ingest(bot, update, {
         isTest: true,
         onlyRouteId: route.id,

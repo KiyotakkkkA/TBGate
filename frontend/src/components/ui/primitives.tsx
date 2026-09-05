@@ -10,8 +10,6 @@ import {
 } from 'react';
 import { cn } from '@/lib/utils';
 
-/* ---------------------------------------------------------------- button */
-
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'icon';
 
@@ -59,8 +57,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   );
 });
 
-/* ----------------------------------------------------------------- field */
-
 export interface FieldProps {
   label: string;
   htmlFor?: string;
@@ -71,7 +67,6 @@ export interface FieldProps {
   className?: string;
 }
 
-/** Label + control + hint/error, wired for accessibility. */
 export function Field({ label, htmlFor, hint, error, required, children, className }: FieldProps) {
   return (
     <div className={cn('space-y-1.5', className)}>
@@ -90,8 +85,6 @@ export function Field({ label, htmlFor, hint, error, required, children, classNa
     </div>
   );
 }
-
-/* ----------------------------------------------------------------- input */
 
 const CONTROL_CLASS =
   'w-full rounded-lg border border-border-base bg-surface px-3 py-2 text-sm text-text ' +
@@ -124,8 +117,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectHTMLAttributes<HTMLSel
   },
 );
 
-/* ------------------------------------------------------------- checkbox */
-
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
   label: ReactNode;
   description?: string;
@@ -152,8 +143,6 @@ export function Checkbox({ label, description, className, id, ...props }: Checkb
     </label>
   );
 }
-
-/* --------------------------------------------------------------- switch */
 
 export interface SwitchProps {
   checked: boolean;
@@ -196,8 +185,6 @@ export function Switch({ checked, onChange, label, disabled, id }: SwitchProps) 
     </div>
   );
 }
-
-/* ------------------------------------------------------------------ code */
 
 export function Code({ children, className }: { children: ReactNode; className?: string }) {
   return (

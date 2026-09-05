@@ -14,7 +14,6 @@ function readInitialTheme(): Theme {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-/** Class-based dark mode, remembered per browser. */
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(readInitialTheme);
 

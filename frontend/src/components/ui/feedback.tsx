@@ -13,8 +13,6 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { Button } from './primitives';
 
-/* ------------------------------------------------------------------ badge */
-
 export type BadgeTone = 'neutral' | 'success' | 'warning' | 'danger' | 'accent';
 
 const BADGE_TONES: Record<BadgeTone, string> = {
@@ -50,7 +48,6 @@ export function Badge({
   );
 }
 
-/** One place that maps a domain status onto a badge tone, so colours stay consistent. */
 export function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { tone: BadgeTone; label: string }> = {
     success: { tone: 'success', label: 'Success' },
@@ -76,8 +73,6 @@ export function StatusBadge({ status }: { status: string }) {
     </Badge>
   );
 }
-
-/* ------------------------------------------------------------------ toast */
 
 interface Toast {
   id: number;
@@ -178,8 +173,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/* ------------------------------------------------------------------ modal */
-
 export function Modal({
   open,
   onClose,
@@ -254,7 +247,6 @@ export function Modal({
   );
 }
 
-/** Confirmation gate for destructive actions. */
 export function ConfirmDialog({
   open,
   onClose,

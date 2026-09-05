@@ -3,11 +3,6 @@ import { ConfigurationError, loadEnv } from './config/env.js';
 import { buildServer } from './http/server.js';
 import { createLogger } from './lib/logger.js';
 
-/**
- * Startup sequence (docs/ARCHITECTURE.md §Lifecycle):
- * validate env -> open the database -> migrate -> bootstrap the admin -> audit webhooks ->
- * start the delivery worker and cleanup job -> listen.
- */
 async function main(): Promise<void> {
   let env;
   try {

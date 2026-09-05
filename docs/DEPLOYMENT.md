@@ -285,51 +285,6 @@ could not deliver during the gap.
 
 ---
 
-## Docker Hub publishing
-
-```bash
-docker login
-
-docker build \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:1.0.0 \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:latest \
-  .
-
-docker push $DOCKERHUB_USERNAME/telegram-gateway:1.0.0
-docker push $DOCKERHUB_USERNAME/telegram-gateway:latest
-```
-
-Multi-architecture (amd64 + arm64) in one step:
-
-```bash
-docker buildx create --use --name tgw-builder      # first time only
-
-docker buildx build --platform linux/amd64,linux/arm64 \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:1.0.0 \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:latest \
-  --push .
-```
-
-Or via the Makefile, which never hardcodes an account:
-
-```bash
-make docker-push DOCKERHUB_USERNAME=youruser
-```
-
-### Automated publishing
-
-Push a `v*` tag and the `docker-publish` workflow builds and pushes for you:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-It needs two repository secrets: `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (a Docker Hub
-**access token**, created under Account Settings → Security — not your account password).
-
----
-
 ## Health checks and monitoring
 
 | Endpoint  | Use                                                 |

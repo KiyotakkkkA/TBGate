@@ -24,7 +24,6 @@ export interface TestHarness {
   env: Env;
   telegramCalls: TelegramCall[];
   deliveryCalls: DeliveryCall[];
-  /** Controls what the fake destination responds with for the next requests. */
   destinationResponse: { status: number; body: string; throwError?: Error | null };
   close: () => Promise<void>;
 }
@@ -114,7 +113,6 @@ export async function createTestHarness(
   };
 }
 
-/** Signs in and returns the cookie header plus CSRF token for authenticated requests. */
 export async function login(
   harness: TestHarness,
   username = 'admin',

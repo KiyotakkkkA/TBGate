@@ -6,7 +6,6 @@ export interface ClassifiedUpdate {
   updateId: number | null;
   chatId: string | null;
   userId: string | null;
-  /** True when the payload carried a field outside the known update-type list. */
   isUnknownType: boolean;
 }
 

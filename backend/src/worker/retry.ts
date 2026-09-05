@@ -6,7 +6,6 @@ export interface RetryPolicy {
 
 export interface RetryDecision {
   shouldRetry: boolean;
-  /** Milliseconds to wait before the next attempt, when `shouldRetry` is true. */
   delayMs: number;
   nextAttemptAt: number;
 }

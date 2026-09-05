@@ -96,8 +96,6 @@ export function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(bufferA, bufferB);
 }
 
-/* ---------------------------------------------------------------- tokens */
-
 export function randomToken(bytes = 32): string {
   return randomBytes(bytes).toString('base64url');
 }
@@ -106,11 +104,8 @@ export function sha256Hex(value: string): string {
   return createHmac('sha256', 'tg-gateway-digest').update(value, 'utf8').digest('hex');
 }
 
-/* ------------------------------------------------------------- redaction */
-
 const BOT_TOKEN_PATTERN = /\b(\d{6,12}):([A-Za-z0-9_-]{20,})\b/g;
 
-/** Masks a Telegram bot token for display: `123456789:AAE...XYZ` -> `123456789:••••XYZ`. */
 export function maskBotToken(token: string): string {
   const [id, secret] = token.split(':');
   if (!id || !secret) return '••••';
@@ -123,7 +118,6 @@ export function maskTail(value: string, visible = 4): string {
   return `••••${value.slice(-visible)}`;
 }
 
-/** Strips anything that looks like a bot token out of arbitrary text before it is logged. */
 export function redactSecrets(input: string): string {
   return input.replace(BOT_TOKEN_PATTERN, (_match, id: string) => `${id}:[REDACTED]`);
 }
