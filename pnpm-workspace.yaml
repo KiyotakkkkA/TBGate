@@ -1,0 +1,9 @@
+packages:
+  - shared
+  - backend
+  - frontend
+
+allowBuilds:
+  esbuild: true
+  '@libsql/client': true
+  '@node-rs/argon2': true

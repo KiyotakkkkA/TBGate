@@ -1,0 +1,65 @@
+# Production deployment.
+#
+#   cp .env.example .env      # then fill in the required secrets (pnpm secrets)
+#   mkdir -p data
+#   docker compose up -d
+#
+# TLS is terminated by a reverse proxy in front of this container; the gateway itself
+# speaks plain HTTP on 8080. See docs/DEPLOYMENT.md for Caddy and Nginx examples.
+
+services:
+  telegram-gateway:
+    # Build locally, or comment `build` out and pull a published image instead.
+    image: ${DOCKERHUB_USERNAME:-local}/${IMAGE_NAME:-telegram-gateway}:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: telegram-gateway
+    restart: unless-stopped
+    ports:
+      - '${PORT:-8080}:8080'
+    env_file:
+      - .env
+    environment:
+      # Always inside the container, regardless of what .env says for local development.
+      DATABASE_URL: file:/app/data/gateway.sqlite
+      HOST: 0.0.0.0
+      PORT: '8080'
+    volumes:
+      # SQLite lives here. This is the only state that must survive a container replacement.
+      - ./data:/app/data
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8080/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    # Hardening: the app only ever writes to /app/data.
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    networks:
+      - gateway
+
+  # ── Example downstream service ────────────────────────────────────────────
+  # Destinations can address other containers by service name, e.g.
+  #   http://python-worker:8000/events
+  #
+  # python-worker:
+  #   image: your-org/python-worker:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     TG_GATEWAY_SIGNING_SECRET: ${WORKER_SIGNING_SECRET}
+  #   networks:
+  #     - gateway
+
+networks:
+  gateway:
+    driver: bridge

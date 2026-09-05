@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    // `URL` is a global in both consumers (Node and the browser); DOM supplies its type
+    // for this package's standalone type-check without pulling in a runtime dependency.
+    "lib": ["ES2023", "DOM"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts"]
+}
