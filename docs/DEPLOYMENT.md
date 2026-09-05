@@ -216,7 +216,7 @@ services:
     image: your-org/python-worker:latest
     environment:
       TG_GATEWAY_SIGNING_SECRET: ${WORKER_SIGNING_SECRET}
-    networks: [gateway]     # same network — this is what makes the name resolvable
+    networks: [gateway] # same network — this is what makes the name resolvable
 
 networks:
   gateway:
@@ -233,7 +233,7 @@ If a delivery fails with `DNS_ERROR`, the two containers are not on the same net
 
 ```yaml
 volumes:
-  - ./data:/app/data      # → /app/data/gateway.sqlite
+  - ./data:/app/data # → /app/data/gateway.sqlite
 ```
 
 That single file holds bots, destinations, routes, events, deliveries, users and API keys.
@@ -332,10 +332,10 @@ It needs two repository secrets: `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (a D
 
 ## Health checks and monitoring
 
-| Endpoint | Use |
-| --- | --- |
+| Endpoint  | Use                                                 |
+| --------- | --------------------------------------------------- |
 | `/health` | Liveness. Cheap, always 200 while the process runs. |
-| `/ready` | Readiness. 503 when the database is unreachable. |
+| `/ready`  | Readiness. 503 when the database is unreachable.    |
 
 The image ships a `HEALTHCHECK` against `/health`, so `docker ps` shows `(healthy)`. For an
 external monitor, poll `/ready` — it is the one that actually verifies a dependency.

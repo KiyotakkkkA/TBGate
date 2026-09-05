@@ -60,18 +60,18 @@ users ──┬──< bots ──< routes >── destinations
         sessions, app_settings
 ```
 
-| Table | Purpose |
-| --- | --- |
-| `users` | Admin and manager accounts. Argon2id hashes; `is_bootstrap` marks the protected first admin. |
-| `sessions` | Server-side sessions. Stores a keyed digest of the cookie value, never the token. |
-| `bots` | Encrypted token, encrypted Telegram `secret_token`, allowed update types, webhook state. |
-| `destinations` | URL, method, timeout, custom headers, encrypted HMAC signing secret. |
-| `routes` | Per bot: update types (or `*`), destination, priority, optional chat filter. |
-| `telegram_events` | Raw update JSON plus classification. Unique on `(bot_id, telegram_update_id)`. |
-| `deliveries` | Queue and history in one table. Status, attempt counters, lease columns, replay links. |
-| `delivery_attempts` | One row per HTTP attempt: status, duration, truncated body, error code. |
-| `api_keys` | Digest, prefix, scopes, owner, expiry and revocation. |
-| `app_settings` | Reserved for future persisted runtime settings. |
+| Table               | Purpose                                                                                      |
+| ------------------- | -------------------------------------------------------------------------------------------- |
+| `users`             | Admin and manager accounts. Argon2id hashes; `is_bootstrap` marks the protected first admin. |
+| `sessions`          | Server-side sessions. Stores a keyed digest of the cookie value, never the token.            |
+| `bots`              | Encrypted token, encrypted Telegram `secret_token`, allowed update types, webhook state.     |
+| `destinations`      | URL, method, timeout, custom headers, encrypted HMAC signing secret.                         |
+| `routes`            | Per bot: update types (or `*`), destination, priority, optional chat filter.                 |
+| `telegram_events`   | Raw update JSON plus classification. Unique on `(bot_id, telegram_update_id)`.               |
+| `deliveries`        | Queue and history in one table. Status, attempt counters, lease columns, replay links.       |
+| `delivery_attempts` | One row per HTTP attempt: status, duration, truncated body, error code.                      |
+| `api_keys`          | Digest, prefix, scopes, owner, expiry and revocation.                                        |
+| `app_settings`      | Reserved for future persisted runtime settings.                                              |
 
 Ownership is a nullable `owner_id` on `bots`, `destinations` and `api_keys`. Managers are
 filtered to rows they own; admins see everything. Deleting a user leaves their bots in

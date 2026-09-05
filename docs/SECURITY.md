@@ -17,14 +17,14 @@ administrator-supplied URLs. So the two assets that matter are **stored secrets*
 
 ### What is encrypted
 
-| Secret | Storage |
-| --- | --- |
-| Telegram bot token | AES-256-GCM ciphertext in `bots.encrypted_token` |
-| Telegram `secret_token` | AES-256-GCM ciphertext in `bots.encrypted_webhook_secret` |
-| Destination signing secret | AES-256-GCM ciphertext in `destinations.encrypted_signing_secret` |
-| Admin password | Argon2id hash (19 MiB, t=2, p=1) |
-| Session token | HMAC-SHA256 digest keyed with `SESSION_SECRET` |
-| Gateway API key | HMAC-SHA256 digest keyed with a value derived from `APP_ENCRYPTION_KEY` |
+| Secret                     | Storage                                                                 |
+| -------------------------- | ----------------------------------------------------------------------- |
+| Telegram bot token         | AES-256-GCM ciphertext in `bots.encrypted_token`                        |
+| Telegram `secret_token`    | AES-256-GCM ciphertext in `bots.encrypted_webhook_secret`               |
+| Destination signing secret | AES-256-GCM ciphertext in `destinations.encrypted_signing_secret`       |
+| Admin password             | Argon2id hash (19 MiB, t=2, p=1)                                        |
+| Session token              | HMAC-SHA256 digest keyed with `SESSION_SECRET`                          |
+| Gateway API key            | HMAC-SHA256 digest keyed with a value derived from `APP_ENCRYPTION_KEY` |
 
 Passwords, session tokens and API keys are **never** recoverable — only digests are stored.
 Bot tokens and signing secrets are reversible by design (the gateway must present them),
@@ -101,7 +101,7 @@ Telegram error message that echoes a URL) passes through a regex redactor that r
 Two roles, deliberately no teams or tenants. **Admins** manage everything, including user
 accounts. **Managers** create and route their own bots and destinations and see only rows
 they own; every service method filters by `owner_id` rather than relying on the UI to hide
-things. Ownership is enforced server-side on read *and* write, including through API keys —
+things. Ownership is enforced server-side on read _and_ write, including through API keys —
 a manager's key inherits exactly that manager's reach.
 
 The bootstrap administrator is protected: it cannot be blocked, demoted or deleted, and the
@@ -253,13 +253,13 @@ route to anything sensitive.
 
 Security headers come from `@fastify/helmet`:
 
-| Header | Value |
-| --- | --- |
-| `Content-Security-Policy` | `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'` |
-| `X-Content-Type-Options` | `nosniff` |
-| `X-Frame-Options` | `SAMEORIGIN` (plus `frame-ancestors 'none'`) |
-| `Referrer-Policy` | `same-origin` |
-| `Strict-Transport-Security` | one year, when `COOKIE_SECURE=true` |
+| Header                      | Value                                                                                                                                                                                               |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Content-Security-Policy`   | `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'` |
+| `X-Content-Type-Options`    | `nosniff`                                                                                                                                                                                           |
+| `X-Frame-Options`           | `SAMEORIGIN` (plus `frame-ancestors 'none'`)                                                                                                                                                        |
+| `Referrer-Policy`           | `same-origin`                                                                                                                                                                                       |
+| `Strict-Transport-Security` | one year, when `COOKIE_SECURE=true`                                                                                                                                                                 |
 
 `script-src` is strictly `'self'` — no inline scripts, no CDN. `style-src` allows inline
 styles because React sets element styles at runtime; that is a far weaker exposure than

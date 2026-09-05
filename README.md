@@ -624,6 +624,7 @@ examples/    Runnable signature-verification receivers (Node.js, Python)
 
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — request flow, data model, design decisions
 - [docs/API.md](docs/API.md) — full HTTP API reference
+- [docs/CLI.md](docs/CLI.md) — pnpm scripts, Make targets and command-line workflows
 - [docs/SECURITY.md](docs/SECURITY.md) — encryption, signing, auth, SSRF, secret management
 - [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — Docker, Compose, reverse proxies, upgrades
 

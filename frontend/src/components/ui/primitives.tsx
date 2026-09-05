@@ -184,7 +184,7 @@ export function Switch({ checked, onChange, label, disabled, id }: SwitchProps) 
         <span
           className={cn(
             'absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform',
-            checked ? 'translate-x-4.5' : 'translate-x-0.5',
+            checked ? 'translate-x-0.5' : '-translate-x-4',
           )}
         />
       </button>
