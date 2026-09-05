@@ -1,4 +1,4 @@
-# Telegram Gateway
+# Telegram Bots Gateway (TBGateway)
 
 A lightweight, self-hosted **Telegram Bot Gateway and webhook router** with a modern admin
 panel. Point any number of Telegram bots at it, then fan their updates out to your own
@@ -20,22 +20,9 @@ message broker, no sidecars.
 
 - [Features](#features)
 - [Architecture](#architecture)
-- [Screenshots](#screenshots)
-- [Prerequisites](#prerequisites)
-- [Quick start (Docker)](#quick-start-docker)
-- [Local development](#local-development)
-- [Environment configuration](#environment-configuration)
-- [Generating secrets](#generating-secrets)
-- [Reverse proxy and HTTPS](#reverse-proxy-and-https)
-- [Telegram webhook requirements](#telegram-webhook-requirements)
 - [Roles and users](#roles-and-users)
 - [Gateway API](#gateway-api)
 - [Webhook signing](#webhook-signing)
-- [Database persistence and backups](#database-persistence-and-backups)
-- [Docker Hub publishing](#docker-hub-publishing)
-- [CI/CD](#cicd)
-- [Upgrading](#upgrading)
-- [Troubleshooting](#troubleshooting)
 - [Project layout](#project-layout)
 
 ---
@@ -59,7 +46,7 @@ message broker, no sidecars.
 - Database-backed queue with a configurable retry schedule, per-attempt history, response
   status, timing, captured response body and classified transport errors.
 - Deliveries survive restarts. Pending work resumes where it left off.
-- Manual replay of a delivery or an entire event — always as a *new* record, never a
+- Manual replay of a delivery or an entire event — always as a _new_ record, never a
   rewrite of history.
 - Test events: send a clearly-marked synthetic update through a single route.
 
@@ -110,192 +97,18 @@ process manager and no second runtime — see
 chosen over running Next.js alongside the API.
 
 Full write-up: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
----
-
-## Screenshots
-
-> Screenshots are not committed yet. Capture them at `/admin`, `/admin/bots/:id` and
-> `/admin/deliveries` and drop them in `docs/images/`.
-
-| Dashboard | Bot detail | Deliveries |
-| --------- | ---------- | ---------- |
-| _`docs/images/dashboard.png`_ | _`docs/images/bot-detail.png`_ | _`docs/images/deliveries.png`_ |
-
----
-
-## Prerequisites
-
-**To deploy:** Docker and Docker Compose. Nothing else — Node.js is not needed on the host.
-
-**To develop:** Node.js 22+ and pnpm 10+.
-
-**To receive Telegram updates:** a publicly reachable HTTPS URL. Telegram will not deliver
-to plain HTTP or to a self-signed certificate it cannot verify.
-
----
-
-## Quick start (Docker)
-
-```bash
-mkdir telegram-gateway && cd telegram-gateway
-
-# Copy docker-compose.yml and .env.example from this repository, then:
-cp .env.example .env
-mkdir -p data
-
-# Fill in the two required secrets (see "Generating secrets" below)
-openssl rand -hex 32      # → APP_ENCRYPTION_KEY
-openssl rand -base64 48   # → SESSION_SECRET
-
-# Also set PUBLIC_BASE_URL and ADMIN_PASSWORD in .env, then:
-docker compose up -d --build
-```
-
-Point your reverse proxy at the container and open:
-
-```
-https://telegram.example.com/admin
-```
-
-Sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD`, then **change the password immediately**
-from the user menu. After that, `ADMIN_PASSWORD` is no longer used for anything.
-
-Then, in the admin panel:
-
-1. **Bots → Add bot** — paste the token from [@BotFather](https://t.me/BotFather). The
-   gateway calls `getMe` to verify it, encrypts it, and registers the Telegram webhook.
-2. **Destinations → Add destination** — e.g. `http://python-worker:8000/events`.
-3. **Bot → Routes → Add route** — `message` → that destination.
-4. **Send test** on the route to confirm the wiring, then message your bot for real.
-
----
-
-## Local development
-
-```bash
-cp .env.example .env
-pnpm install
-pnpm db:migrate
-pnpm dev
-```
-
-`pnpm dev` runs the API on <http://127.0.0.1:8080> and the Vite dev server on
-<http://127.0.0.1:5173> (which proxies `/api` to the API). Open the Vite URL for hot
-reloading, or build the SPA once (`pnpm --filter ./frontend build`) and use port 8080 to
-exercise the exact production setup.
-
-For local development set these in `.env`:
-
-```ini
-NODE_ENV=development
-PUBLIC_BASE_URL=http://localhost:8080
-DATABASE_URL=file:../data/gateway.sqlite   # relative to backend/, i.e. <repo>/data
-COOKIE_SECURE=false                        # otherwise the session cookie is dropped over plain HTTP
-LOG_PRETTY=true
-```
-
-### Commands
-
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | API + admin UI with hot reload |
-| `pnpm build` | Build the SPA and bundle the server |
-| `pnpm start` | Run the built server |
-| `pnpm lint` / `pnpm typecheck` | Lint / type-check the workspace |
-| `pnpm test` | Vitest unit + integration suite |
-| `pnpm test:e2e` | Playwright browser tests |
-| `pnpm db:generate` | Generate a migration from schema changes |
-| `pnpm db:migrate` | Apply migrations |
-| `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm secrets` | Print freshly generated secrets |
-
-A `Makefile` wraps the same commands plus the Docker workflow (`make help`).
-
----
-
-## Environment configuration
-
-Every supported variable is documented — with defaults, format and security notes — in
-[`.env.example`](.env.example). The configuration is validated at startup, and the process
-exits with a readable summary if anything is missing or malformed (secret **values** are
-never echoed):
-
-```
-Invalid configuration:
-  * APP_ENCRYPTION_KEY must decode to exactly 32 bytes (256 bits). Generate with: openssl rand -hex 32
-  * PUBLIC_BASE_URL must be an absolute http/https URL
-```
-
-**Required:** `PUBLIC_BASE_URL`, `ADMIN_PASSWORD`, `APP_ENCRYPTION_KEY`, `SESSION_SECRET`.
-Everything else has a production-suitable default.
-
-### Generating secrets
-
-```bash
-openssl rand -hex 32      # APP_ENCRYPTION_KEY — 64 hex chars (32 bytes / 256 bits)
-openssl rand -base64 48   # SESSION_SECRET     — any string of at least 32 characters
-```
-
-`APP_ENCRYPTION_KEY` also accepts base64 that decodes to exactly 32 bytes. Or run
-`pnpm secrets` / `make secrets` to print both at once.
-
-> **Back up `APP_ENCRYPTION_KEY`.** It is never stored in the database. Lose it and every
-> stored bot token and signing secret becomes unrecoverable and must be re-entered.
-
-### Admin password reset
-
-`ADMIN_PASSWORD` is used **only** to create the first account. Changing it later does not
-touch the stored password. To recover a lost administrator password, see
-[docs/SECURITY.md](docs/SECURITY.md#recovering-a-lost-administrator-password).
-
----
-
-## Reverse proxy and HTTPS
-
-The gateway listens on plain HTTP inside the container. Terminate TLS in front of it and
-set `TRUST_PROXY=true` so client IPs and protocol are read from the forwarded headers.
-
-**Caddy** (`Caddyfile`):
-
-```caddy
-telegram.example.com {
-    encode zstd gzip
-    reverse_proxy telegram-gateway:8080
-}
-```
-
-That is the whole configuration — Caddy obtains and renews the certificate automatically.
-
-Nginx, Traefik and Cloudflare Tunnel examples are in
-[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#reverse-proxy-examples).
-
----
-
-## Telegram webhook requirements
-
-- The URL must be **HTTPS** on port 443, 80, 88 or 8443, with a certificate Telegram can
-  verify. `PUBLIC_BASE_URL` must match exactly what the outside world reaches.
-- Webhook URLs are derived as `<PUBLIC_BASE_URL><TELEGRAM_WEBHOOK_PATH>/<botId>`, where
-  `botId` is an opaque gateway identifier — **not** the bot token.
-- Requests are authenticated with the per-bot Telegram `secret_token`, checked against the
-  `X-Telegram-Bot-Api-Secret-Token` header in constant time.
-- If `PUBLIC_BASE_URL` changes, the gateway detects the mismatch at startup and flags the
-  affected bots as **URL mismatch** in the UI. It never silently re-registers — use
-  **Bot → Telegram → Re-register webhook** when you are ready.
-
 ---
 
 ## Roles and users
 
-| Capability | Admin | Manager |
-| --- | :---: | :---: |
-| Create / edit / delete own bots, destinations, routes | ✅ | ✅ |
-| See other users' bots, events and deliveries | ✅ | ❌ |
-| Reassign resource ownership | ✅ | ❌ |
-| Create, block, delete users; reset passwords | ✅ | ❌ |
-| Create API keys | ✅ | ✅ (scoped to their own bots) |
-| Run retention cleanup | ✅ | ❌ |
+| Capability                                            | Admin |            Manager            |
+| ----------------------------------------------------- | :---: | :---------------------------: |
+| Create / edit / delete own bots, destinations, routes |  ✅   |              ✅               |
+| See other users' bots, events and deliveries          |  ✅   |              ❌               |
+| Reassign resource ownership                           |  ✅   |              ❌               |
+| Create, block, delete users; reset passwords          |  ✅   |              ❌               |
+| Create API keys                                       |  ✅   | ✅ (scoped to their own bots) |
+| Run retention cleanup                                 |  ✅   |              ❌               |
 
 The first administrator is bootstrapped from `ADMIN_USERNAME` / `ADMIN_PASSWORD` and can
 never be blocked or deleted. Blocking a user terminates their sessions immediately. An
@@ -368,14 +181,14 @@ under `update`, with gateway metadata alongside it:
 
 Headers:
 
-| Header | Meaning |
-| --- | --- |
-| `X-TG-Gateway-Signature` | `sha256=<hex HMAC>` over `timestamp + "." + rawBody` |
-| `X-TG-Gateway-Timestamp` | Unix seconds, part of the signed string |
+| Header                     | Meaning                                              |
+| -------------------------- | ---------------------------------------------------- |
+| `X-TG-Gateway-Signature`   | `sha256=<hex HMAC>` over `timestamp + "." + rawBody` |
+| `X-TG-Gateway-Timestamp`   | Unix seconds, part of the signed string              |
 | `X-TG-Gateway-Delivery-Id` | Stable delivery id — use it for your own idempotency |
-| `X-TG-Gateway-Event-Type` | Telegram update type |
-| `X-TG-Gateway-Attempt` | 1-based attempt counter |
-| `X-TG-Gateway-Test` | `true` only for admin-generated test events |
+| `X-TG-Gateway-Event-Type`  | Telegram update type                                 |
+| `X-TG-Gateway-Attempt`     | 1-based attempt counter                              |
+| `X-TG-Gateway-Test`        | `true` only for admin-generated test events          |
 
 Reveal a destination's secret with the eye icon on the **Destinations** page.
 
@@ -474,141 +287,6 @@ deduplicate on `X-TG-Gateway-Delivery-Id` or on `update.update_id` if that matte
 
 ---
 
-## Database persistence and backups
-
-All state lives in a single SQLite file on the mounted volume:
-
-```yaml
-volumes:
-  - ./data:/app/data     # → /app/data/gateway.sqlite
-```
-
-Nothing else in the container is persistent, so replacing it loses nothing. Migrations run
-automatically at startup behind a lock, which makes `docker compose pull && up -d` safe.
-
-**Backups.** The database runs in WAL mode, so a plain `cp` of the `.sqlite` file while the
-container is running can miss committed data still in the write-ahead log. Either stop the
-container briefly, or use `sqlite3`'s online backup:
-
-```bash
-# Simplest: a few seconds of downtime, guaranteed consistent.
-docker compose stop telegram-gateway
-tar czf backup-$(date +%F).tar.gz data/
-docker compose start telegram-gateway
-
-# Or, with sqlite3 installed on the host, no downtime:
-sqlite3 data/gateway.sqlite ".backup 'backup-$(date +%F).sqlite'"
-```
-
-Back up `APP_ENCRYPTION_KEY` separately and just as carefully — the database is useless
-without it.
-
----
-
-## Docker Hub publishing
-
-The Docker Hub account is never hardcoded; it comes from an environment variable or a
-command-line argument.
-
-```bash
-docker login
-
-# Versioned + latest, in one build:
-docker build \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:1.0.0 \
-  -t $DOCKERHUB_USERNAME/telegram-gateway:latest \
-  .
-
-docker push $DOCKERHUB_USERNAME/telegram-gateway:1.0.0
-docker push $DOCKERHUB_USERNAME/telegram-gateway:latest
-```
-
-Or, with the Makefile (multi-architecture via buildx):
-
-```bash
-make docker-push DOCKERHUB_USERNAME=youruser
-```
-
-Local build only:
-
-```bash
-docker build -t telegram-gateway:local .
-docker compose up -d
-```
-
----
-
-## CI/CD
-
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) — on pull requests and pushes to
-`main`: install, lint, type-check, test, build, and build the Docker image without pushing.
-
-[`.github/workflows/docker-publish.yml`](.github/workflows/docker-publish.yml) — on a `v*`
-tag: run the tests, then build a multi-architecture image with Buildx and push
-`:MAJOR.MINOR.PATCH`, `:MAJOR.MINOR` and `:latest` to Docker Hub.
-
-Add two repository secrets — `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (a Docker Hub
-access token, not your password). No credentials appear in the workflow files.
-
-```bash
-git tag v1.0.0 && git push origin v1.0.0
-```
-
----
-
-## Upgrading
-
-```bash
-docker compose pull
-docker compose up -d
-```
-
-Migrations apply automatically on boot. The `./data` volume carries bots, routes, events
-and pending deliveries across the replacement. Keep the same `APP_ENCRYPTION_KEY`, or
-stored tokens cannot be decrypted.
-
----
-
-## Troubleshooting
-
-**The container exits immediately with "Invalid configuration".**
-A required variable is missing or malformed. The message lists exactly which ones; check
-`docker compose logs telegram-gateway`.
-
-**Sign-in appears to succeed but immediately bounces back to the login page.**
-`COOKIE_SECURE=true` over plain HTTP — the browser drops the cookie. Use HTTPS, or set
-`COOKIE_SECURE=false` for local development only.
-
-**Telegram never delivers updates.**
-Open **Bot → Telegram**; the live `getWebhookInfo` panel shows Telegram's own error text.
-Common causes: `PUBLIC_BASE_URL` does not match the public URL, TLS certificate not
-verifiable, or the reverse proxy not forwarding `/telegram/webhook/*`.
-
-**Webhook state shows "URL mismatch".**
-`PUBLIC_BASE_URL` changed. Nothing is broken automatically — click **Re-register webhook**.
-
-**Deliveries fail with `DESTINATION_URL_REJECTED`.**
-The destination resolves to a private address while
-`DESTINATION_ALLOW_PRIVATE_NETWORKS=false`. Set it to `true` for Docker service-name
-routing (`http://python-worker:8000/...`).
-
-**Deliveries fail with `DNS_ERROR` or `CONNECTION_REFUSED` for a container name.**
-The gateway and the target must share a Docker network. Add both services to the same
-`networks:` entry in `docker-compose.yml`.
-
-**Downstream returns 401 "invalid signature".**
-Your handler is almost certainly verifying against a re-serialised body. Sign the **raw**
-request bytes, exactly as received, prefixed with `timestamp + "."`.
-
-**"A stored secret could not be decrypted."**
-`APP_ENCRYPTION_KEY` does not match the one used when the data was written. Restore the
-original key, or delete and re-add the affected bots and destinations.
-
-**Lost the admin password.**
-See [docs/SECURITY.md](docs/SECURITY.md#recovering-a-lost-administrator-password).
-
----
-
 ## Project layout
 
 ```
@@ -630,4 +308,4 @@ examples/    Runnable signature-verification receivers (Node.js, Python)
 
 ## License
 
-MIT
+[MIT](LICENSE)

@@ -17,3 +17,6 @@ data/
 playwright-report/
 test-results/
 .turbo/
+
+# Local development and deployment notes
+/docs/DEV_SETUP.md
